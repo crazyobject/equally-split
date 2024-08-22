@@ -1,5 +1,5 @@
-// src/components/ExpenseForm.js
 import React, { useState, useEffect } from "react";
+import AlertMessage from "./shared/AlertMessage";
 
 function ExpenseForm({ participants, onExpensesSubmit }) {
   const [expenses, setExpenses] = useState([]);
@@ -8,36 +8,72 @@ function ExpenseForm({ participants, onExpensesSubmit }) {
   const [expenseComment, setExpenseComment] = useState("");
   const [showExpenses, setShowExpenses] = useState(true);
 
-  // Load expenses from local storage on component mount
+  // Error state variables
+  const [participantError, setParticipantError] = useState("");
+  const [amountError, setAmountError] = useState("");
+  const [commentError, setCommentError] = useState("");
+
   useEffect(() => {
-    debugger;
     const savedExpenses = JSON.parse(localStorage.getItem("expenses"));
     if (savedExpenses) {
       setExpenses(savedExpenses);
     }
   }, []);
 
-  // Save expenses to local storage whenever they change
   useEffect(() => {
     if (expenses.length > 0)
       localStorage.setItem("expenses", JSON.stringify(expenses));
   }, [expenses]);
 
+  const validateFields = () => {
+    let isValid = true;
+
+    // Validate Participant
+    if (!selectedParticipant) {
+      setParticipantError("Please select a participant.");
+      isValid = false;
+    } else {
+      setParticipantError("");
+    }
+
+    // Validate Amount
+    if (!expenseAmount) {
+      setAmountError("Please enter an amount.");
+      isValid = false;
+    } else if (parseFloat(expenseAmount) <= 0) {
+      setAmountError("Amount must be greater than zero.");
+      isValid = false;
+    } else {
+      setAmountError("");
+    }
+
+    // Validate Comment
+    if (!expenseComment.trim()) {
+      setCommentError("Please enter a comment.");
+      isValid = false;
+    } else {
+      setCommentError("");
+    }
+
+    return isValid;
+  };
+
   const handleAddExpense = () => {
-    if (selectedParticipant && expenseAmount) {
+    if (validateFields()) {
       const newExpenses = [
         ...expenses,
         {
           participant: selectedParticipant,
           amount: parseFloat(expenseAmount),
-          comment: expenseComment,
+          comment: expenseComment.trim(),
+          date: new Date().toLocaleString(),
         },
       ];
       setExpenses(newExpenses);
       setSelectedParticipant("");
       setExpenseAmount("");
       setExpenseComment("");
-      onExpensesSubmit(newExpenses); // Update the parent component with new expenses
+      onExpensesSubmit(newExpenses);
     }
   };
 
@@ -46,71 +82,106 @@ function ExpenseForm({ participants, onExpensesSubmit }) {
     onExpensesSubmit(expenses);
   };
 
+  // Calculate the total expenses
+  const totalExpense = expenses.reduce(
+    (total, expense) => total + expense.amount,
+    0
+  );
+
   return (
-    <div className="container mt-4">
-      <h2>Step 2: Enter Expenses</h2>
+    <div className="container mt-4 commonBlueBg">
+      <h2 className="mb-4">Step 2: Enter Expenses</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label className="form-label">Select Participant</label>
           <select
-            className="form-select"
+            className={`form-select ${participantError ? "is-invalid" : ""}`}
             value={selectedParticipant}
             onChange={(e) => setSelectedParticipant(e.target.value)}
-            required
           >
-            <option value="">Choose...</option>
+            <option value="">Choose participant...</option>
             {participants.map((participant, index) => (
               <option key={index} value={participant}>
                 {participant}
               </option>
             ))}
           </select>
+          {participantError && (
+            <div className="invalid-feedback">{participantError}</div>
+          )}
         </div>
         <div className="mb-3">
-          <label className="form-label">Expense Amount</label>
           <input
             type="number"
-            className="form-control"
+            className={`form-control ${amountError ? "is-invalid" : ""}`}
             value={expenseAmount}
             onChange={(e) => setExpenseAmount(e.target.value)}
-            required
+            min="0"
+            step="0.01"
+            placeholder="Enter amount"
           />
+          {amountError && <div className="invalid-feedback">{amountError}</div>}
         </div>
         <div className="mb-3">
-          <label className="form-label">Comment</label>
           <input
             type="text"
-            className="form-control"
+            className={`form-control ${commentError ? "is-invalid" : ""}`}
             value={expenseComment}
             onChange={(e) => setExpenseComment(e.target.value)}
+            placeholder="Enter description. e.g. petrol, snacks"
           />
+          {commentError && (
+            <div className="invalid-feedback">{commentError}</div>
+          )}
         </div>
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary me-2"
           onClick={handleAddExpense}
         >
           Add Expense
         </button>
-        <button
-          type="button"
-          className="btn btn-info ms-2"
-          onClick={() => setShowExpenses(!showExpenses)}
-        >
-          {showExpenses ? "Hide Expenses" : "Show Expenses"}
-        </button>
+        {totalExpense > 0 ? (
+          <button
+            type="button"
+            className="btn btn-info"
+            onClick={() => setShowExpenses(!showExpenses)}
+          >
+            {showExpenses ? "Hide Expenses" : "Show Expenses"}
+          </button>
+        ) : (
+          <></>
+        )}
       </form>
-      {showExpenses && (
-        <div>
-          <h3 className="mt-4">Expenses</h3>
-          <ul className="list-group">
-            {expenses.map((expense, index) => (
-              <li key={index} className="list-group-item">
-                {expense.participant} spent ${expense.amount.toFixed(2)} -{" "}
-                {expense.comment}
-              </li>
-            ))}
-          </ul>
+      {showExpenses && totalExpense > 0 && (
+        <div className="mt-4">
+          <h3>Expenses - Total: {totalExpense.toFixed(2)}</h3>
+          {expenses.length === 0 ? (
+            <AlertMessage
+              message='No expenses added yet. Start adding by clicking "Add Expense".'
+              type="info"
+            />
+          ) : (
+            <ul className="list-group mt-2">
+              {expenses.map((expense, index) => (
+                <li
+                  key={index}
+                  className={`list-group-item text-capitalize ${
+                    index % 2 === 0
+                      ? "list-group-item-light"
+                      : "list-group-item-secondary"
+                  }`}
+                >
+                  {expense.participant} spent :- {expense.amount.toFixed(2)} -{" "}
+                  <span className="text-muted small text-capitalize">
+                    {expense.comment}
+                  </span>
+                  <span className="float-end text-muted small">
+                    {expense.date}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
     </div>

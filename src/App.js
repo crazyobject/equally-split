@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import TripForm from "./components/TripForm";
 import ExpenseForm from "./components/ExpenseForm";
 import SplitResult from "./components/SplitResult";
+import TopBar from "./components/shared/topbar/TopBar";
+import "./styles.css"; // Import common CSS
 
 function App() {
   const [tripData, setTripData] = useState(null);
@@ -33,6 +35,7 @@ function App() {
 
   return (
     <div className="App">
+      <TopBar />
       {!tripData ? (
         <TripForm onTripDataSubmit={handleTripDataSubmit} />
       ) : (

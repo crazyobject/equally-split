@@ -1,0 +1,29 @@
+/* src/components/TopBar.css */
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #21b6da;
+  padding: 10px 20px;
+  color: white;
+}
+
+.logo img {
+  height: 40px; /* Adjust logo size */
+}
+
+.menu-icons {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  font-size: 24px;
+  margin-left: 15px;
+  cursor: pointer;
+}
+
+.icon:hover {
+  color: #ccc; /* Hover effect */
+}

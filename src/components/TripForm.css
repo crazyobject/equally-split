@@ -1,39 +1,45 @@
 /* TripForm.css */
 
-.form-bg {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #004a9d;
-}
-
-.btn-success {
-  background-color: #28a745;
-  border-color: #28a745;
-}
-
-.btn-success:hover {
-  background-color: #218838;
-  border-color: #1e7e34;
-}
-
-.form-control-lg {
-  padding: 1.5rem 1rem;
-}
-
-.alert {
-  border-radius: .25rem;
-}
-
-.list-group-item {
-  font-size: 1.1rem;
-  border-radius: .25rem;
-}
+.commonBlueBg {
+    background-color: #f8f9fa; /* Light blue background color for form */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    padding: 1.5rem; /* Add padding around the form content */
+  }
+  
+  .form-title {
+    margin-bottom: 1rem; /* Space below the title */
+    font-weight: bold; /* Make the title bold */
+    color: #000; /* Set text color to black */
+    text-align: left; /* Align text to the left */
+  }
+  
+  .form-label {
+    font-weight: 600; /* Make labels slightly bold */
+  }
+  
+  .btn-primary {
+    background-color: #007bff; /* Primary button color */
+    border: none; /* Remove border */
+  }
+  
+  .btn-success {
+    background-color: #28a745; /* Success button color */
+    border: none; /* Remove border */
+  }
+  
+  .btn-danger {
+    background-color: #dc3545; /* Danger button color */
+    border: none; /* Remove border */
+  }
+  
+  .form-control {
+    border-radius: 0.25rem; /* Rounded corners for input fields */
+  }
+  
+  .list-group-item {
+    display: flex; /* Flexbox for items */
+    justify-content: space-between; /* Space items evenly */
+    align-items: center; /* Center items vertically */
+  }
+  
